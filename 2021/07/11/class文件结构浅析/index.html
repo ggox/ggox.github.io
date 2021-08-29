@@ -173,18 +173,238 @@
 
         <div class="article-content markdown-body">
             <h2 id="主要组成"><a href="#主要组成" class="headerlink" title="主要组成"></a>主要组成</h2><ul>
-<li>魔数</li>
-<li>版本号</li>
-<li>常量池</li>
-<li>类访问标记</li>
-<li>类索引</li>
-<li>超类索引</li>
-<li>接口表索引</li>
-<li>字段表</li>
-<li>方发表</li>
-<li>属性表</li>
+<li>魔数(Magic Number)</li>
+<li>版本号(Minor&amp;Major Version)</li>
+<li>常量池(Constant Pool)</li>
+<li>类访问标记(Access Flag)</li>
+<li>类索引(This Class)</li>
+<li>超类索引(Super Class)</li>
+<li>接口表索引(Interface)</li>
+<li>字段表(Field)</li>
+<li>方法表(Method)</li>
+<li>属性表(Attribute)</li>
 </ul>
-<p>todo</p>
+<p>顺口溜：My Very Cute Animal Turns Savage In Full Moon Areas.</p>
+<h2 id="魔数"><a href="#魔数" class="headerlink" title="魔数"></a>魔数</h2><p>4个字节：0xCAFEBABE  咖啡宝贝…</p>
+<h2 id="版本号"><a href="#版本号" class="headerlink" title="版本号"></a>版本号</h2><p>4个字节：副版本和主版本号，0x34(52) -&gt; java8</p>
+<h2 id="常量池"><a href="#常量池" class="headerlink" title="常量池"></a>常量池</h2><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> &#123;</span></span><br><span class="line">	u2 constant_pool_count;</span><br><span class="line">  cp_info constant_pool[constant_pool_count<span class="number">-1</span>];</span><br><span class="line">&#125;</span><br><span class="line">cp_info &#123;</span><br><span class="line">  u1 tag;</span><br><span class="line">  u1 info[];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>常量池tag枚举</p>
+<table>
+<thead>
+<tr>
+<th>类型</th>
+<th>tag值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CONSTANT_Utf8</td>
+<td>1</td>
+</tr>
+<tr>
+<td>CONSTANT_Integer</td>
+<td>3</td>
+</tr>
+<tr>
+<td>CONSTANT_Float</td>
+<td>4</td>
+</tr>
+<tr>
+<td>CONSTANT_Long</td>
+<td>5</td>
+</tr>
+<tr>
+<td>CONSTANT_Double</td>
+<td>6</td>
+</tr>
+<tr>
+<td>CONSTANT_Class</td>
+<td>7</td>
+</tr>
+<tr>
+<td>CONSTANT_String</td>
+<td>8</td>
+</tr>
+<tr>
+<td>CONSTANT_Fieldref</td>
+<td>9</td>
+</tr>
+<tr>
+<td>CONSTANT_Methodref</td>
+<td>10</td>
+</tr>
+<tr>
+<td>CONSTANT_InterfaceMethodref</td>
+<td>11</td>
+</tr>
+<tr>
+<td>CONSTANT_NameAndType</td>
+<td>12</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodHandle</td>
+<td>15</td>
+</tr>
+<tr>
+<td>CONSTANT_MethodType</td>
+<td>16</td>
+</tr>
+<tr>
+<td>CONSTANT_InvokeDynamic</td>
+<td>18</td>
+</tr>
+</tbody></table>
+<p>每种类型都有自己的编码规则，具体可查阅jvm规范</p>
+<p>注意：CONSTANT_Long 和 CONSTANT_Double 会占据两个常量池槽位（jvm规范），具体原因有些历史背景，可以点击这个地址了解：<a class="link"   target="_blank" rel="noopener" href="https://www.zhihu.com/question/22930911" >https://www.zhihu.com/question/22930911<i class="fas fa-external-link-alt"></i></a></p>
+<h2 id="Access-Flags"><a href="#Access-Flags" class="headerlink" title="Access Flags"></a>Access Flags</h2><p>2个字节，类访问标记定义如下：</p>
+<table>
+<thead>
+<tr>
+<th>访问标记名</th>
+<th>十六进制值</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ACC_PUBLIC</td>
+<td>1</td>
+<td>是否public</td>
+</tr>
+<tr>
+<td>ACC_FINAL</td>
+<td>10</td>
+<td>是否final</td>
+</tr>
+<tr>
+<td>ACC_SUPER</td>
+<td>20</td>
+<td>不再使用</td>
+</tr>
+<tr>
+<td>ACC_INTERFACE</td>
+<td>200</td>
+<td>类还是接口</td>
+</tr>
+<tr>
+<td>ACC_ABSTRACT</td>
+<td>400</td>
+<td>是否abstract</td>
+</tr>
+<tr>
+<td>ACC_SYNTHETIC</td>
+<td>1000</td>
+<td>编译器自动生成，非用户源代码编译生成</td>
+</tr>
+<tr>
+<td>ACC_ANNOTATION</td>
+<td>2000</td>
+<td>是否注解类</td>
+</tr>
+<tr>
+<td>ACC_ENUM</td>
+<td>4000</td>
+<td>是否枚举类</td>
+</tr>
+</tbody></table>
+<p>访问标记非随意组合，具体规则见：<code>com.sun.tools.javac.comp.Check</code></p>
+<h2 id="this-class-super-class-interface"><a href="#this-class-super-class-interface" class="headerlink" title="this_class/super_class/interface"></a>this_class/super_class/interface</h2><p>类索引、直接类索引、直接父接口</p>
+<h2 id="字段表"><a href="#字段表" class="headerlink" title="字段表"></a>字段表</h2><ul>
+<li><p>结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  u2 fields_count;</span><br><span class="line">  field_info  fields[fields_count];</span><br><span class="line">&#125;</span><br><span class="line">field_info &#123;</span><br><span class="line">  u2 access_flags;</span><br><span class="line">  u2 name_index;</span><br><span class="line">  u2 descriptor_index;</span><br><span class="line">  u2 attributes_count;</span><br><span class="line">  attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>字段描述符</p>
+<table>
+<thead>
+<tr>
+<th>描述符</th>
+<th>类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>B</td>
+<td>byte类型</td>
+</tr>
+<tr>
+<td>C</td>
+<td>char</td>
+</tr>
+<tr>
+<td>D</td>
+<td>double类型</td>
+</tr>
+<tr>
+<td>F</td>
+<td>float</td>
+</tr>
+<tr>
+<td></td>
+<td>int</td>
+</tr>
+<tr>
+<td>J</td>
+<td>long</td>
+</tr>
+<tr>
+<td>S</td>
+<td>short</td>
+</tr>
+<tr>
+<td></td>
+<td>boolean</td>
+</tr>
+<tr>
+<td>L ClassName;</td>
+<td>引用类型,”L”+对象类型的全限定名+”;”</td>
+</tr>
+<tr>
+<td>[</td>
+<td>一维数组</td>
+</tr>
+<tr>
+<td>[[</td>
+<td>二维数组</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="方法表"><a href="#方法表" class="headerlink" title="方法表"></a>方法表</h2><ul>
+<li><p>结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	u2 methods_count;</span><br><span class="line">	method_info methods[methods_count];</span><br><span class="line">&#125;</span><br><span class="line">method_info &#123;</span><br><span class="line">	u2 access_flags;</span><br><span class="line">	u2 name_index;</span><br><span class="line">	u2 descriptor_index;</span><br><span class="line">	u2 attributes_count;</span><br><span class="line">	atrribute_info accributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>方法描述符</p>
+<p>（参数1类型 参数2类型 参数3类型…）返回值类型</p>
+<p>示例：Object foo(int i, double d, Thread t) 的方法描述符为  (IDLjava/lang/Thread;)Ljava/lang/Objectl;</p>
+<p>tips: jvm规范里方法描述符中返回值类型是有保存的，但是java语言中同入参类型不同返回值类型的函数是不允许的</p>
+</li>
+</ul>
+<h2 id="属性表"><a href="#属性表" class="headerlink" title="属性表"></a>属性表</h2><ul>
+<li><p>结构</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">	u2 attributes_count;</span><br><span class="line">	attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br><span class="line">attribute_info &#123;</span><br><span class="line">	u2 attribute_name_index;</span><br><span class="line">	u4 attribute_length;</span><br><span class="line">	u1 info[attribute_length]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>字段表属性示例：ConstantValue</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">ConstantValue_attribute &#123;</span><br><span class="line">	u2 attribute_name_index;</span><br><span class="line">	u4 attribute_length;</span><br><span class="line">	u2 constantvalue_index;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li><p>方法表属性示例：Code</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">Code_attribute &#123;</span><br><span class="line">	u2 attribute_name_index;</span><br><span class="line">	u4 attribute_length;</span><br><span class="line">	u2 max_stack;</span><br><span class="line">	u2 max_locals;</span><br><span class="line">	u4 code_length;</span><br><span class="line">	u1 code[code_length];</span><br><span class="line">	u2 exception_table_length;</span><br><span class="line">	&#123;</span><br><span class="line">		u2 start_pc;</span><br><span class="line">		u2 end_pc;</span><br><span class="line">		u2 handler_pc;</span><br><span class="line">		u2 catch_type;</span><br><span class="line">	&#125; exception_table[exception_table_length];</span><br><span class="line">	u2 attributes_count;</span><br><span class="line">	attribute_info attributes[attributes_count];</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>max_stack 操作数栈的最大深度</p>
+<p>max_locals 局部变量表的大小</p>
+<p>code_length&amp;code 存储字节码相关信息</p>
+<p>exception_table_length&amp;exception_table 异常表信息</p>
+<pre><code>* start_pc end_pc handler_pc 都是指向code直接数组的索引值
+* start_pc end_pc 表示异常处理器覆盖的字节码开始和结束为止 左闭右开 [start_pc, end_pc)
+* handler_pc 表示异常处理器handler在code字节数组的起始位置
+</code></pre>
+<ul>
+<li>catch_type 需要catch的异常类型，catch_type = 0,表示可处理任意异常，可用于实现finally语义</li>
+</ul>
+<p>attributes_count&amp;attributes 用来表示Code的附属属性</p>
+<ul>
+<li>LineNumberTable</li>
+<li>LocalVariableTable</li>
+<li>LocalVariableTypeTable</li>
+<li>StackMapTable</li>
+</ul>
+</blockquote>
+</li>
+</ul>
 
         </div>
 
