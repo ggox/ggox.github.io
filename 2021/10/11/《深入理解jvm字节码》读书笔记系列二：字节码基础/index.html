@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ggox">
+    
+    <title>
+        
+            《深入理解jvm字节码》读书笔记系列二：字节码基础 |
+        
+        天驱武库
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo2.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"ggox.github.io","root":"/","language":"en"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/logo2.svg","favicon":"/images/logo2.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/kakaxi.svg">
+                </a>
+            
+            <a class="logo-title" href="/">
+                天驱武库
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">《深入理解jvm字节码》读书笔记系列二：字节码基础</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/logo2.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ggox</span>
+                        
+                            <span class="author-label">Lv1</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-10-11 15:21:12
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/jvm/">jvm</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%97%E8%8A%82%E7%A0%81/">字节码</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="字节码基础"><a href="#字节码基础" class="headerlink" title="字节码基础"></a>字节码基础</h2><h3 id="虚拟机栈"><a href="#虚拟机栈" class="headerlink" title="虚拟机栈"></a>虚拟机栈</h3><ul>
+<li><p>栈帧</p>
+<ol>
+<li><p>局部变量表</p>
+</li>
+<li><p>操作数栈</p>
+</li>
+</ol>
+</li>
+</ul>
+<h3 id="字节码指令"><a href="#字节码指令" class="headerlink" title="字节码指令"></a>字节码指令</h3><ul>
+<li><p>加载和存储指令</p>
+<ol>
+<li><p>load类</p>
+<p>iload_0、lload、fload、dload、aload</p>
+</li>
+<li><p>store类</p>
+<p>istore、lstore、fstore、dstore、astore</p>
+</li>
+<li><p>常量加载相关</p>
+<p>iconst：[-1,5]，操作数和操作码只占一个字节</p>
+<p>bipush：[-128,127]，操作数和操作码只占两个字节</p>
+<p>sipush：[-32768,32767]，操作数和操作码只占三个字节</p>
+<p>ldc#10：其他范围</p>
+</li>
+</ol>
+</li>
+<li><p>操作数栈指令</p>
+<ol>
+<li>pop：将栈顶的值出栈</li>
+<li>dup：复制栈顶的元素并压入栈顶<ul>
+<li>dup_x1：复制操作数栈栈顶的值，并插入栈顶一下两个值</li>
+</ul>
+</li>
+<li>swap：交换栈顶的两个元素</li>
+</ol>
+</li>
+<li><p>运算和类型转换指令</p>
+<table>
+<thead>
+<tr>
+<th>oeprator</th>
+<th>指令（以int为例）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>+</td>
+<td>iadd</td>
+</tr>
+<tr>
+<td>-</td>
+<td>isub</td>
+</tr>
+<tr>
+<td>*</td>
+<td>imul</td>
+</tr>
+<tr>
+<td>/</td>
+<td>idiv</td>
+</tr>
+<tr>
+<td>%</td>
+<td>irem</td>
+</tr>
+<tr>
+<td>negate(-)</td>
+<td>ineg</td>
+</tr>
+<tr>
+<td>&amp;</td>
+<td>iand</td>
+</tr>
+<tr>
+<td>|</td>
+<td>ior</td>
+</tr>
+<tr>
+<td>^</td>
+<td>ixor</td>
+</tr>
+<tr>
+<td>i2f</td>
+<td>int转float</td>
+</tr>
+</tbody></table>
+<p>tips:</p>
+<ol>
+<li>不同类型的数据运算需要先进行类型转换</li>
+<li>boolean、char、byte、short在java语言层面是不同的数据类型，但是在jvm层面都被当做int处理</li>
+<li>宽化类型转换：byte -&gt; short -&gt; int -&gt; long -&gt; float -&gt; double</li>
+</ol>
+</li>
+<li><p>控制转移指令</p>
+<ul>
+<li>条件转移：ifeq、iflt、ifle、ifne、ifgt、ifge、ifnull、ifnonnull、if_icmpeq、if_icmpne、if_icmplt、if_icmpgt、if_icmple、if_icmpge、if_acmpeq、if_acmpne</li>
+<li>复合条件转移：tableswitch、lookupswitch</li>
+<li>无条件转移：goto、goto_w、jsr、jsr_w、ret</li>
+</ul>
+</li>
+</ul>
+<h3 id="java语法的字节码层面实现示例"><a href="#java语法的字节码层面实现示例" class="headerlink" title="java语法的字节码层面实现示例"></a>java语法的字节码层面实现示例</h3><ul>
+<li><p>示例一：增强for循环</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span>[] numbers)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> number: numbers) &#123;</span><br><span class="line">    sum += number;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>局部变量表：</p>
+<table>
+<thead>
+<tr>
+<th>0</th>
+<th>1</th>
+<th>2</th>
+<th>3</th>
+<th>4</th>
+<th>5</th>
+<th>6</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>this</td>
+<td>numbers</td>
+<td>sum</td>
+<td>$array</td>
+<td>$len</td>
+<td>$i</td>
+<td>number($array[$i])</td>
+</tr>
+</tbody></table>
+<p>从字节码层面看等同于：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">sum</span><span class="params">(<span class="keyword">int</span>[] numbers)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">int</span> sum = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; numbers.length; i++) &#123;</span><br><span class="line">    sum += numbers[i];</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">return</span> sum;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>可见，增强for循环只是一个语法糖</p>
+</li>
+<li><p>示例二：switch case底层实现原理</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">testTableSwitch</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (i) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">100</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">101</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">104</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">4</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>生成的字节码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: iload_1</span><br><span class="line"><span class="number">1</span>: tableswitch   &#123; <span class="comment">// 100 to 104</span></span><br><span class="line">  <span class="number">100</span>: <span class="number">36</span></span><br><span class="line">  <span class="number">101</span>: <span class="number">38</span></span><br><span class="line">  <span class="number">102</span>: <span class="number">42</span></span><br><span class="line">  <span class="number">103</span>: <span class="number">42</span></span><br><span class="line">  <span class="number">104</span>: <span class="number">40</span></span><br><span class="line">  <span class="keyword">default</span>: <span class="number">42</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">36</span>: iconst_0</span><br><span class="line"><span class="number">37</span>: ireturn</span><br><span class="line"><span class="number">38</span>: iconst_1</span><br><span class="line"><span class="number">39</span>: ireturn</span><br><span class="line"><span class="number">40</span>: iconst_4</span><br><span class="line"><span class="number">41</span>: ireturn</span><br><span class="line"><span class="number">42</span>: iconst_m1</span><br><span class="line"><span class="number">43</span>: ireturn</span><br></pre></td></tr></table></figure>
+
+<p>代码里没有出现102、103，字节码里确出现了，因为编译器会判断case值是否紧凑，如果紧凑，就采用tableswitch实现，会补全空缺值。如果case值不紧凑，则使用lookupswitch语句实现，如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">testLookupSwitch</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (i) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">1</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">100</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="number">10</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: iload_1</span><br><span class="line"><span class="number">1</span>: lookupswitch  &#123; <span class="comment">// 3</span></span><br><span class="line">  <span class="number">1</span>: <span class="number">36</span></span><br><span class="line">  <span class="number">10</span>: <span class="number">38</span></span><br><span class="line">  <span class="number">100</span>: <span class="number">40</span></span><br><span class="line">  <span class="keyword">default</span>: <span class="number">42</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">36</span>: iconst_0</span><br><span class="line"><span class="number">37</span>: ireturn</span><br><span class="line"><span class="number">38</span>: iconst_1</span><br><span class="line"><span class="number">39</span>: ireturn</span><br><span class="line"><span class="number">40</span>: iconst_2</span><br><span class="line"><span class="number">41</span>: ireturn</span><br><span class="line"><span class="number">42</span>: iconst_m1</span><br><span class="line"><span class="number">43</span>: ireturn</span><br></pre></td></tr></table></figure>
+
+<p>lookupswitch会自动排序case值，查找时采用二分查找</p>
+<p>下面看一个String的switch case实例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">testStringSwitch</span><span class="params">(String language)</span> </span>&#123;</span><br><span class="line">  <span class="keyword">switch</span> (language) &#123;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;java&quot;</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;python&quot;</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">    <span class="keyword">case</span> <span class="string">&quot;golang&quot;</span>:</span><br><span class="line">      <span class="keyword">return</span> <span class="number">3</span>;</span><br><span class="line">    <span class="keyword">default</span>:</span><br><span class="line">      <span class="keyword">return</span> -<span class="number">1</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: aload_1</span><br><span class="line"><span class="number">1</span>: astore_2</span><br><span class="line"><span class="number">2</span>: iconst_m1</span><br><span class="line"><span class="number">3</span>: istore_3</span><br><span class="line"><span class="number">4</span>: aload_2</span><br><span class="line"><span class="number">5</span>: invokevirtual #<span class="number">2</span>                  <span class="comment">// Method java/lang/String.hashCode:()I</span></span><br><span class="line"><span class="number">8</span>: lookupswitch  &#123; <span class="comment">// 3</span></span><br><span class="line">  -<span class="number">1240339754</span>: <span class="number">72</span></span><br><span class="line">  -<span class="number">973197092</span>: <span class="number">58</span></span><br><span class="line">  <span class="number">3254818</span>: <span class="number">44</span></span><br><span class="line">  <span class="keyword">default</span>: <span class="number">83</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">44</span>: aload_2</span><br><span class="line"><span class="number">45</span>: ldc           #<span class="number">3</span>                  <span class="comment">// String java</span></span><br><span class="line"><span class="number">47</span>: invokevirtual #<span class="number">4</span>                  <span class="comment">// Method java/lang/String.equals:(Ljava/lang/Object;)Z</span></span><br><span class="line"><span class="number">50</span>: ifeq          <span class="number">83</span></span><br><span class="line"><span class="number">53</span>: iconst_0</span><br><span class="line"><span class="number">54</span>: istore_3</span><br><span class="line"><span class="number">55</span>: goto          <span class="number">83</span></span><br><span class="line"><span class="number">58</span>: aload_2</span><br><span class="line"><span class="number">59</span>: ldc           #<span class="number">5</span>                  <span class="comment">// String python</span></span><br><span class="line"><span class="number">61</span>: invokevirtual #<span class="number">4</span>                  <span class="comment">// Method java/lang/String.equals:(Ljava/lang/Object;)Z</span></span><br><span class="line"><span class="number">64</span>: ifeq          <span class="number">83</span></span><br><span class="line"><span class="number">67</span>: iconst_1</span><br><span class="line"><span class="number">68</span>: istore_3</span><br><span class="line"><span class="number">69</span>: goto          <span class="number">83</span></span><br><span class="line"><span class="number">72</span>: aload_2</span><br><span class="line"><span class="number">73</span>: ldc           #<span class="number">6</span>                  <span class="comment">// String golang</span></span><br><span class="line"><span class="number">75</span>: invokevirtual #<span class="number">4</span>                  <span class="comment">// Method java/lang/String.equals:(Ljava/lang/Object;)Z</span></span><br><span class="line"><span class="number">78</span>: ifeq          <span class="number">83</span></span><br><span class="line"><span class="number">81</span>: iconst_2</span><br><span class="line"><span class="number">82</span>: istore_3</span><br><span class="line"><span class="number">83</span>: iload_3</span><br><span class="line"><span class="number">84</span>: tableswitch   &#123; <span class="comment">// 0 to 2</span></span><br><span class="line">  <span class="number">0</span>: <span class="number">112</span></span><br><span class="line">  <span class="number">1</span>: <span class="number">114</span></span><br><span class="line">  <span class="number">2</span>: <span class="number">116</span></span><br><span class="line">  <span class="keyword">default</span>: <span class="number">118</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="number">112</span>: iconst_1</span><br><span class="line"><span class="number">113</span>: ireturn</span><br><span class="line"><span class="number">114</span>: iconst_2</span><br><span class="line"><span class="number">115</span>: ireturn</span><br><span class="line"><span class="number">116</span>: iconst_3</span><br><span class="line"><span class="number">117</span>: ireturn</span><br><span class="line"><span class="number">118</span>: iconst_m1</span><br><span class="line"><span class="number">119</span>: ireturn</span><br></pre></td></tr></table></figure>
+
+<p>可见，String的switch case底层用到了hashCode方法，包含两层switch（先lookupswitch再tableswitch），为了解决hash冲突的问题，还需要增加equals判断，多了很多逻辑，效率肯定低于int的switch case</p>
+</li>
+<li><p>示例三：i++&amp;++i</p>
+<p>不说废话上实例</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// i++ demo</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test1</span><span class="params">(<span class="keyword">int</span> i)</span> </span>&#123;</span><br><span class="line">  i = i++;</span><br><span class="line">  <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// ++i demo</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">int</span> <span class="title">test2</span><span class="params">(<span class="keyword">int</span> i)</span></span>&#123;</span><br><span class="line">  i = ++i;</span><br><span class="line">  <span class="keyword">return</span> i;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"> <span class="comment">// i++</span></span><br><span class="line"> <span class="number">0</span>: iload_0</span><br><span class="line"> <span class="number">1</span>: iinc          <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"> <span class="number">4</span>: istore_0</span><br><span class="line"> <span class="number">5</span>: iload_0</span><br><span class="line"> <span class="number">6</span>: ireturn</span><br><span class="line"><span class="comment">// ++i</span></span><br><span class="line"> <span class="number">0</span>: iinc          <span class="number">0</span>, <span class="number">1</span></span><br><span class="line"> <span class="number">3</span>: iload_0</span><br><span class="line"> <span class="number">4</span>: istore_0</span><br><span class="line"> <span class="number">5</span>: iload_0</span><br><span class="line"> <span class="number">6</span>: ireturn</span><br></pre></td></tr></table></figure>
+
+<p>iinc 指令：不通过操作数栈计算，直接怼局部变量表操作加法</p>
+</li>
+<li><p>示例四：try…catch…finally</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">testTryCatchFinally</span><span class="params">()</span></span>&#123;</span><br><span class="line">  <span class="keyword">int</span> i = <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">try</span> &#123;</span><br><span class="line">    Class.forName(<span class="string">&quot;test&quot;</span>);</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (ClassNotFoundException e1) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">  &#125; <span class="keyword">catch</span> (Exception e2) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="number">2</span>;</span><br><span class="line">  &#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">    i++;</span><br><span class="line">    <span class="keyword">return</span> i;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"> <span class="number">0</span>: iconst_0</span><br><span class="line"> <span class="number">1</span>: istore_1</span><br><span class="line"> <span class="number">2</span>: ldc           #<span class="number">2</span>                  <span class="comment">// String test</span></span><br><span class="line"> <span class="number">4</span>: invokestatic  #<span class="number">3</span>                  <span class="comment">// Method java/lang/Class.forName:(Ljava/lang/String;)Ljava/lang/Class;</span></span><br><span class="line"> <span class="number">7</span>: pop</span><br><span class="line"> <span class="number">8</span>: iload_1</span><br><span class="line"> <span class="number">9</span>: istore_2</span><br><span class="line"><span class="number">10</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line"><span class="number">13</span>: iload_1</span><br><span class="line"><span class="number">14</span>: ireturn</span><br><span class="line"><span class="number">15</span>: astore_2</span><br><span class="line"><span class="number">16</span>: iconst_1</span><br><span class="line"><span class="number">17</span>: istore_3</span><br><span class="line"><span class="number">18</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line"><span class="number">21</span>: iload_1</span><br><span class="line"><span class="number">22</span>: ireturn</span><br><span class="line"><span class="number">23</span>: astore_2</span><br><span class="line"><span class="number">24</span>: iconst_2</span><br><span class="line"><span class="number">25</span>: istore_3</span><br><span class="line"><span class="number">26</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line"><span class="number">29</span>: iload_1</span><br><span class="line"><span class="number">30</span>: ireturn</span><br><span class="line"><span class="number">31</span>: astore        <span class="number">4</span></span><br><span class="line"><span class="number">33</span>: iinc          <span class="number">1</span>, <span class="number">1</span></span><br><span class="line"><span class="number">36</span>: iload_1</span><br><span class="line"><span class="number">37</span>: ireturn</span><br><span class="line">Exception table:</span><br><span class="line"> from    to  target type</span><br><span class="line">     <span class="number">2</span>    <span class="number">10</span>    <span class="number">15</span>   Class java/lang/ClassNotFoundException</span><br><span class="line">     <span class="number">2</span>    <span class="number">10</span>    <span class="number">23</span>   Class java/lang/Exception</span><br><span class="line">     <span class="number">2</span>    <span class="number">10</span>    <span class="number">31</span>   any</span><br><span class="line">    <span class="number">15</span>    <span class="number">18</span>    <span class="number">31</span>   any</span><br><span class="line">    <span class="number">23</span>    <span class="number">26</span>    <span class="number">31</span>   any</span><br><span class="line">    <span class="number">31</span>    <span class="number">33</span>    <span class="number">31</span>   any</span><br></pre></td></tr></table></figure>
+
+<p>通过异常表实现，异常表的组成：from、to、target、type</p>
+<p>含义：在[from,to)字节码范围内，如果抛出的异常类型为type，就会跳转到target处执行</p>
+<p>finally底层实现：异常表的type为any，表示任意值，所以一定会执行，且finally不是通过goto语句实现的，而是通过复制finally代码块的方式，插入到所有正常或异常退出之前的地方，以上述实例为例：</p>
+<ol>
+<li>在Class.forName(“test”)后面插入finally相关字节码，如果没有抛出异常则直接执行力finally方法</li>
+<li>在捕获异常ClassNotFoundException后面插入finally相关字节码，如果没有异常则会执行finally方法</li>
+<li>在捕获异常Exception后面插入finally相关字节码，如果没有异常执行finally方法</li>
+<li>抛出异常但是没有匹配等情况，执行finally方法</li>
+</ol>
+<p>finally代码块中修改return的值，不会影响最终return的结果，正常return时，会存储一个临时值在局部变量表中，finally修改的是原始的值，不会修改存储的临时值</p>
+</li>
+<li><p>示例五：try-with-resource</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">testTryWithResource</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">  <span class="keyword">try</span> (FileOutputStream out = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;test&quot;</span>)) &#123;</span><br><span class="line">    out.write(<span class="number">1</span>);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">... </span><br><span class="line"><span class="number">63</span>: aload_1</span><br><span class="line"> <span class="number">64</span>: invokevirtual #<span class="number">6</span>                  <span class="comment">// Method java/io/FileOutputStream.close:()V</span></span><br><span class="line"> <span class="number">67</span>: goto          <span class="number">85</span></span><br><span class="line"> <span class="number">70</span>: astore        <span class="number">5</span></span><br><span class="line"> <span class="number">72</span>: aload_2</span><br><span class="line"> <span class="number">73</span>: aload         <span class="number">5</span></span><br><span class="line"> <span class="comment">// 这一步，调用了Throwable.addSuppressed方法，这样异常就不会被内部吃掉，会反应在堆栈中</span></span><br><span class="line"> <span class="number">75</span>: invokevirtual #<span class="number">8</span>                  <span class="comment">// Method java/lang/Throwable.addSuppressed:(Ljava/lang/Throwable;)V</span></span><br><span class="line"> <span class="number">78</span>: goto          <span class="number">85</span></span><br><span class="line"> <span class="number">81</span>: aload_1</span><br><span class="line"> <span class="number">82</span>: invokevirtual #<span class="number">6</span>                  <span class="comment">// Method java/io/FileOutputStream.close:()V</span></span><br><span class="line"> <span class="number">85</span>: aload         <span class="number">4</span></span><br><span class="line"> <span class="number">87</span>: athrow</span><br><span class="line"> <span class="number">88</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="对象相关的字节码指令"><a href="#对象相关的字节码指令" class="headerlink" title="对象相关的字节码指令"></a>对象相关的字节码指令</h3><ol>
+<li><init>方法<br>成员变量的初始化，初始化语句块都会编译进<init>方法（按顺序调用，构造方法的代码块始终在最后被调用）<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Hello</span> </span>&#123;</span><br><span class="line">  <span class="keyword">private</span> FileOutputStream outputStream = <span class="keyword">new</span> FileOutputStream(<span class="string">&quot;test.txt&quot;</span>);</span><br><span class="line">  <span class="comment">// 构造函数明明是个空方法，但是必须抛出FileNotFoundException异常，因为上面的成员变量初始化语句也会编译进&lt;init&gt;方法</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">Hello</span><span class="params">()</span> <span class="keyword">throws</span> FileNotFoundException </span>&#123;</span><br><span class="line">    </span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+<li>new、dup、invokespecial<br>一个对象创建需要三条指令：new dup <init>方法的invokespcecial调用</li>
+</ol>
+<ul>
+<li><p>new的作用：创建一个类实例引用并将引用压入栈顶</p>
+</li>
+<li><p>invokespecial的作用：真正开始调用<init>方法</p>
+</li>
+<li><p>dup的作用：invokespecial会消耗类实例引用，为了防止找不会创建的引用，需要复制一份引用</p>
+</li>
+</ul>
+<ol start="3">
+<li><p><clinit>方法</p>
+<p>类初始化方法，类静态初始化代码块，静态变量初始化都会编译进这个方法（按顺序调用）</p>
+<p><clinit>方法不会被直接调用，它会在以下四个指令触发时被调用：</p>
+<ul>
+<li>new</li>
+<li>getstatic</li>
+<li>putstatic</li>
+<li>invokestatic</li>
+</ul>
+</li>
+</ol>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/07/11/%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3jvm%E5%AD%97%E8%8A%82%E7%A0%81%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%E4%B8%80%EF%BC%9Aclass%E6%96%87%E4%BB%B6%E7%BB%93%E6%9E%84%E6%B5%85%E6%9E%90/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">《深入理解jvm字节码》读书笔记系列一：class文件结构浅析</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ggox</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
