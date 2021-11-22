@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ggox">
+    
+    <title>
+        
+            《深入理解jvm字节码》读书笔记系列三：字节码进阶 |
+        
+        天驱武库
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo2.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"ggox.github.io","root":"/","language":"en"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/logo2.svg","favicon":"/images/logo2.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/kakaxi.svg">
+                </a>
+            
+            <a class="logo-title" href="/">
+                天驱武库
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">《深入理解jvm字节码》读书笔记系列三：字节码进阶</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/logo2.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ggox</span>
+                        
+                            <span class="author-label">Lv1</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;2021-11-21 10:56:34
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/jvm/">jvm</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E5%AD%97%E8%8A%82%E7%A0%81/">字节码</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h2 id="字节码进阶"><a href="#字节码进阶" class="headerlink" title="字节码进阶"></a>字节码进阶</h2><h3 id="一、方法调用指令"><a href="#一、方法调用指令" class="headerlink" title="一、方法调用指令"></a>一、方法调用指令</h3><p>方法调用共涉及五条指令：</p>
+<ul>
+<li>invokestatic：用于静态方法调用</li>
+<li>invokespecial：用于调用私有实例方法、构造器方法以及使用super关键字调用父类的实例方法等</li>
+<li>invokevirtual：用于调用非私有实例方法</li>
+<li>invokeinterface：用于调用接口方法</li>
+<li>invokedynamic：用于调用动态方法</li>
+</ul>
+<h4 id="1-invokestatic"><a href="#1-invokestatic" class="headerlink" title="1. invokestatic"></a>1. invokestatic</h4><p>不需要将对象压栈，只需要将所需的参数压栈即可调用invokestatic</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 被调用的静态方法</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">test</span><span class="params">(String text)</span> </span>&#123;</span><br><span class="line">  System.out.println(text);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 调用的字节码</span></span><br><span class="line"><span class="number">0</span>: ldc           #<span class="number">4</span>                  <span class="comment">// String hello world</span></span><br><span class="line"><span class="number">2</span>: invokestatic  #<span class="number">5</span>                  <span class="comment">// Method test:(Ljava/lang/String;)V</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="2-invokevirtual"><a href="#2-invokevirtual" class="headerlink" title="2. invokevirtual"></a>2. invokevirtual</h4><p>调用目标方法在运行时根据对象的类型确认</p>
+<p>需要将对象引用和方法参数入栈，方法调用结束时对象引用和方法参数都会出栈，返回值（如果有的话）会入栈</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// file.toString()</span></span><br><span class="line"><span class="number">10</span>: aload_1</span><br><span class="line"><span class="number">11</span>: invokevirtual   #<span class="number">5</span>     <span class="comment">// Method java/io/File.toString:()(Ljava/lang/String;</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="3-invokespecial"><a href="#3-invokespecial" class="headerlink" title="3. invokespecial"></a>3. invokespecial</h4><p>如前面说的new一个对象，就用到了invokespecial</p>
+<h4 id="4-invokeinterface"><a href="#4-invokeinterface" class="headerlink" title="4. invokeinterface"></a>4. invokeinterface</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 源码</span></span><br><span class="line"><span class="keyword">private</span> List&lt;String&gt; list;</span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(String item)</span> </span>&#123;</span><br><span class="line">  list.add(item);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 字节码</span></span><br><span class="line"> <span class="number">0</span>: aload_0</span><br><span class="line"> <span class="number">1</span>: getfield      #<span class="number">2</span>                  <span class="comment">// Field list:Ljava/util/List;</span></span><br><span class="line"> <span class="number">4</span>: aload_1</span><br><span class="line"> <span class="number">5</span>: invokeinterface #<span class="number">3</span>,  <span class="number">2</span>            <span class="comment">// InterfaceMethod java/util/List.add:(Ljava/lang/Object;)Z</span></span><br><span class="line"><span class="number">10</span>: pop</span><br><span class="line"><span class="number">11</span>: <span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<p>探究：与invokevirtual有什么不同？</p>
+<ul>
+<li><p>方法分派原理</p>
+<ol>
+<li><p>单继承</p>
+<p>vtable: 虚方法表，子类的虚方法表保留了父类的虚方法表的顺序，invokevirtual调用时，只需要根据该方法在虚方法表中的数组索引（固定不变）找到对应的方法引用即可，十分高效</p>
+</li>
+<li><p>多接口</p>
+<p>itable：由偏移量（offset table）和方法表（method table）两部分组成，invokeinterface调用时：</p>
+<ul>
+<li>先在offet table中查找对应的方法表位置和方法位置（循环遍历：相对低效）</li>
+<li>再在method table中查找具体的方法实现（根据offset直接查找）</li>
+</ul>
+</li>
+</ol>
+</li>
+<li><p>HSDB工具使用</p>
+<ul>
+<li>sudo java -cp sa-jdi.jar sum.jvm.hotspot.HSDB</li>
+<li>Class Browser</li>
+<li>mem命令的使用</li>
+</ul>
+</li>
+</ul>
+<h4 id="5-invokedynamic"><a href="#5-invokedynamic" class="headerlink" title="5. invokedynamic"></a>5. invokedynamic</h4><ul>
+<li><p>MethodHandle — 方法句柄</p>
+<p>使用方法：</p>
+<blockquote>
+<ol>
+<li>创建MethodType对象</li>
+<li>调用MethodHandles.lookup方法，返回MethodHandles.Lookup对象，可以通过该对象查找指定MethodType的方法句柄，如：findStatic、findSpecial、findVirtual等</li>
+<li>拿到方法句柄后，调用方法</li>
+</ol>
+</blockquote>
+</li>
+<li><p>invokedynamic执行流程</p>
+<blockquote>
+<ol>
+<li>jvm首次执行invokedynamic时，调用引导方法（Bootstrap Method）</li>
+<li>引导方法返回一个CallSite对象，内部根据方法签名进行目标方法查找。它个getTarget方法返回方法句柄（MethodHandle）对象</li>
+<li>在CallSite没有变化的情况下，MethodHandle可以一直被调用，如果CallSite有变化，重新查找即可</li>
+</ol>
+</blockquote>
+<p> <img src="https://tva1.sinaimg.cn/large/008i3skNgy1gwoc7wzorij30ue0kwmzu.jpg" alt="image-20211122231935451"></p>
+</li>
+<li><p>示例</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> add(a, b) &#123;</span><br><span class="line">  <span class="keyword">new</span> Exception().printStackTrace()</span><br><span class="line">  <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>字节码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: ldc           #<span class="number">55</span>                 <span class="comment">// class java/lang/Exception</span></span><br><span class="line"><span class="number">2</span>: invokedynamic #<span class="number">60</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #2:init:(Ljava/lang/Class;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">7</span>: invokedynamic #<span class="number">65</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #3:invoke:(Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">12</span>: pop</span><br><span class="line"><span class="number">13</span>: aload_1</span><br><span class="line"><span class="number">14</span>: aload_2</span><br><span class="line"><span class="number">15</span>: invokedynamic #<span class="number">69</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #4:invoke:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">20</span>: areturn</span><br></pre></td></tr></table></figure></li>
+</ul>
+
+        </div>
+
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2021/10/11/%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3jvm%E5%AD%97%E8%8A%82%E7%A0%81%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%E4%BA%8C%EF%BC%9A%E5%AD%97%E8%8A%82%E7%A0%81%E5%9F%BA%E7%A1%80/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">《深入理解jvm字节码》读书笔记系列二：字节码基础</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>&nbsp;-&nbsp;
+            
+            2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ggox</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+        </div>
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
