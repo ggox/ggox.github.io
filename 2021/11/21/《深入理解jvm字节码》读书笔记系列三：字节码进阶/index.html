@@ -23,7 +23,7 @@
     <script id="hexo-configurations">
     let KEEP = window.KEEP || {};
     KEEP.hexo_config = {"hostname":"ggox.github.io","root":"/","language":"en"};
-    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/logo2.svg","favicon":"/images/logo2.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":false,"background_img":"/images/bg.svg","description":"Keep writing and Keep loving."},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.3"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/logo2.svg","favicon":"/images/logo2.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/index4.jpg"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
     KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
   </script>
 <meta name="generator" content="Hexo 5.4.0"></head>
@@ -140,7 +140,9 @@
                     <div class="meta-info">
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
-        <i class="fas fa-edit"></i>&nbsp;2021-11-21 10:56:34
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2021-11-21 10:56:34</span>
+        <span class="mobile">2021-11-21 10:56</span>
     </span>
     
     
@@ -209,7 +211,7 @@
 </ul>
 </li>
 </ol>
-</li>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">InstanceKlass* int2 = (InstanceKlass*) rcvr-&gt;<span class="built_in">klass</span>();</span><br><span class="line">itableOffsetEntry* ki = (itableOffsetEntry*) int2-&gt;<span class="built_in">start_of_itable</span>();</span><br><span class="line"><span class="keyword">int</span> i;</span><br><span class="line"><span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; int2-&gt;<span class="built_in">itable_length</span>(); i++, ki++) &#123;</span><br><span class="line">    <span class="keyword">if</span> (ki-&gt;<span class="built_in">interface_klass</span>() == iclass) <span class="keyword">break</span>;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// if the interface isn&#x27;t found, this class doesn&#x27;t implement this interface.</span></span><br><span class="line"><span class="comment">// The link resolver checks this but only for ther first time this interface is called.</span></span><br><span class="line"><span class="keyword">if</span> (i == int2-&gt;<span class="built_in">itable_length</span>()) &#123;</span><br><span class="line">    <span class="built_in">VM_JAVA_ERROR</span>(vmSymbols::<span class="built_in">java_lang_IncompatibleClassChangeError</span>(), <span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">int</span> mindex = cache-&gt;<span class="built_in">f2_as_index</span>();</span><br><span class="line">itableMethodEntry* im = ki-&gt;<span class="built_in">first_method_entry</span>(rcvr-&gt;<span class="built_in">klass</span>());</span><br><span class="line">callee = im[mindex].<span class="built_in">method</span>();</span><br><span class="line"><span class="keyword">if</span> (callee == <span class="literal">NULL</span>) &#123;</span><br><span class="line">    <span class="built_in">VM_JAVA_ERROR</span>(vmSymbols::<span class="built_in">java_lang_AbstractMethodError</span>(), <span class="string">&quot;&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">istate-&gt;<span class="built_in">set_callee</span>(callee);</span><br><span class="line">istate-&gt;<span class="built_in">set_callee_entry_point</span>(callee-&gt;<span class="built_in">from_interpreted_entry</span>());</span><br></pre></td></tr></table></figure></li>
 <li><p>HSDB工具使用</p>
 <ul>
 <li>sudo java -cp sa-jdi.jar sum.jvm.hotspot.HSDB</li>
@@ -237,17 +239,34 @@
 <li>在CallSite没有变化的情况下，MethodHandle可以一直被调用，如果CallSite有变化，重新查找即可</li>
 </ol>
 </blockquote>
-<p> <img src="https://tva1.sinaimg.cn/large/008i3skNgy1gwoc7wzorij30ue0kwmzu.jpg" alt="image-20211122231935451"></p>
+<p><img src="https://tva1.sinaimg.cn/large/008i3skNgy1gwysr8fedqj30t60k6tb4.jpg" alt="image-20211202002723431"></p>
 </li>
 <li><p>示例</p>
 <figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> add(a, b) &#123;</span><br><span class="line">  <span class="keyword">new</span> Exception().printStackTrace()</span><br><span class="line">  <span class="keyword">return</span> a + b</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">add(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>)</span><br></pre></td></tr></table></figure>
 
 <p>字节码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: ldc           #<span class="number">55</span>                 <span class="comment">// class java/lang/Exception</span></span><br><span class="line"><span class="number">2</span>: invokedynamic #<span class="number">60</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #2:init:(Ljava/lang/Class;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">7</span>: invokedynamic #<span class="number">65</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #3:invoke:(Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">12</span>: pop</span><br><span class="line"><span class="number">13</span>: aload_1</span><br><span class="line"><span class="number">14</span>: aload_2</span><br><span class="line"><span class="number">15</span>: invokedynamic #<span class="number">69</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #4:invoke:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">20</span>: areturn</span><br></pre></td></tr></table></figure></li>
-</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="number">0</span>: ldc           #<span class="number">55</span>                 <span class="comment">// class java/lang/Exception</span></span><br><span class="line"><span class="number">2</span>: invokedynamic #<span class="number">60</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #2:init:(Ljava/lang/Class;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">7</span>: invokedynamic #<span class="number">65</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #3:invoke:(Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">12</span>: pop</span><br><span class="line"><span class="number">13</span>: aload_1</span><br><span class="line"><span class="number">14</span>: aload_2</span><br><span class="line"><span class="number">15</span>: invokedynamic #<span class="number">69</span>,  <span class="number">0</span>             <span class="comment">// InvokeDynamic #4:invoke:(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;</span></span><br><span class="line"><span class="number">20</span>: areturn</span><br></pre></td></tr></table></figure>
 
+<p>MethodHandle示例：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Throwable </span>&#123;</span><br><span class="line">  MethodHandles.Lookup lookup = Methodles.lookup();</span><br><span class="line">  MethodType mt = MethodType.methodType(Object.class,Object.class,Object.class);</span><br><span class="line">  CallSite callSite = IndyInterface.bootstrap(lookup,<span class="string">&quot;invoke&quot;</span>,mt,<span class="string">&quot;add&quot;</span>,<span class="number">0</span>);</span><br><span class="line">  MthodHandle mh = callSite.getTarget();</span><br><span class="line">  mh.invokeExact(obj,<span class="string">&quot;hello&quot;</span>,<span class="string">&quot;world&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="二、原理探究"><a href="#二、原理探究" class="headerlink" title="二、原理探究"></a>二、原理探究</h3><h4 id="1-Lambda表达式的原理"><a href="#1-Lambda表达式的原理" class="headerlink" title="1. Lambda表达式的原理"></a>1. Lambda表达式的原理</h4><h4 id="2-泛型与字节码"><a href="#2-泛型与字节码" class="headerlink" title="2. 泛型与字节码"></a>2. 泛型与字节码</h4><h4 id="3-synchronized实现原理"><a href="#3-synchronized实现原理" class="headerlink" title="3. synchronized实现原理"></a>3. synchronized实现原理</h4><h4 id="4-反射的实现原理"><a href="#4-反射的实现原理" class="headerlink" title="4. 反射的实现原理"></a>4. 反射的实现原理</h4>
         </div>
 
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/jvm/">#jvm</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/%E5%AD%97%E8%8A%82%E7%A0%81/">#字节码</a>&nbsp;
+                    </li>
+                
+            </ul>
         
 
         
@@ -288,14 +307,16 @@
         <div class="copyright-info info-item">
             &copy;
             
-              <span>2020</span>&nbsp;-&nbsp;
+              <span>2020</span>
+              -
             
             2021&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ggox</a>
         </div>
         
         <div class="theme-info info-item">
-            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.3</a>
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
         </div>
+        
         
     </div>
 </footer>
