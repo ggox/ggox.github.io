@@ -178,8 +178,42 @@
         
 
         <div class="article-content markdown-body">
-            <h1 id="Compress-Class-Space-OOM"><a href="#Compress-Class-Space-OOM" class="headerlink" title="Compress Class Space OOM"></a>Compress Class Space OOM</h1><p>最近搬砖过程中，遇到了一次 OOM问题，OOM的位置有点特别，不是 heap 也不是 stackoverflow，所以简单记录一下</p>
+            <h1 id="Compressed-Class-Space-OOM"><a href="#Compressed-Class-Space-OOM" class="headerlink" title="Compressed Class Space OOM"></a>Compressed Class Space OOM</h1><p>最近搬砖过程中，遇到了一次 OOM问题，OOM的位置有点特别，不是 heap 也不是 stackoverflow，所以简单记录一下</p>
 <h2 id="1-问题背景"><a href="#1-问题背景" class="headerlink" title="1 问题背景"></a>1 问题背景</h2><p>公司有一个模型运行引擎，核心能力是动态加载和运行模型（已jar 包的形式，内部是各种 if else 规则），线下有一台机器，因为长时间没有重启，加上一直在发布和更新模型，结果出现了 OOM 问题：<br><img src="/2022/06/26/%E3%80%90%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0%E3%80%91%E8%AE%B0%E4%B8%80%E6%AC%A1Compress-Class-Space-OOM%E9%97%AE%E9%A2%98/e6c9d24ely1h3lurw9mhtj212o07c0uo.png" alt="OOM异常栈"></p>
+<h2 id="2-什么是-compressed-class-space-？"><a href="#2-什么是-compressed-class-space-？" class="headerlink" title="2 什么是 compressed class space ？"></a>2 什么是 compressed class space ？</h2><p>首先需要了解一个概念：压缩指针。所谓压缩指针指的是在 64 位的机器上，使用 32 位的指针来访问数据（堆中的对象或 Metaspace 中的元数据）的一种方式。明显的优势是：占用更小的内存，更好的使用缓存等。</p>
+<p>压缩指针有两种场景：</p>
+<ol>
+<li>对象引用指针压缩</li>
+<li>kclass指针压缩</li>
+</ol>
+<p>两者都可以表示4g-32g的范围，因为普通java对象和kclass对象都需要对齐填充（默认8位），但是目前kclass压缩指针还没有实现shift-mode（技术上是没有问题的，只是现在没有实现）</p>
+<p>下面只讨论 kclass 指针压缩的情况：</p>
+<p>在 64 位的机器中，最终还是需要一个 64 位的地址来访问数据的，所以这个 32 位的值是相对于一个基准地址的值。</p>
+<p>每个 Java 对象，在它的头部，有一个引用指向 Metaspace 中的 Klass 结构。</p>
+<p><img src="/2022/06/26/%E3%80%90%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0%E3%80%91%E8%AE%B0%E4%B8%80%E6%AC%A1Compress-Class-Space-OOM%E9%97%AE%E9%A2%98/20200615153920278.png" alt="img"></p>
+<p>当使用了 compressed class pointers，这个引用是 32 位的值，为了找到真正的 64 位地址，需要加上一个 base 值：</p>
+<p><img src="/2022/06/26/%E3%80%90%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0%E3%80%91%E8%AE%B0%E4%B8%80%E6%AC%A1Compress-Class-Space-OOM%E9%97%AE%E9%A2%98/images2.png" alt="img"></p>
+<p>而且表示 kclass 地址的指针空间必须是连续的（实际大小最高4g，可表示最大32g的范围，即采用shift-mode），而且这个空间一旦指定，不允许随意扩展了，因为后面的地址空间可能已经被使用了。</p>
+<p>另外，64位机器无论使用 malloc 或者 mmap ，操作系统都会返回64位空间中的任意一个值，它并不能保证在一个4g的范围内，所以我们必须通过一次单独的 mmap 调用，提前申请一段连续的区域用于存储 kclass 对象，这块空间就是 Compressed Class Space， 默认 1g, 可通过  -XX:CompressedClassSpaceSize 手动指定</p>
+<p>另外有一个注意点：-XX:-UseCompressedClassPointers 需要搭配 -XX:+UseCompressedOops，但是反过来不需要，也即：我们可以只压缩对象指针，不压缩类指针，但是不能只压缩类指针，不压缩对象指针</p>
+<h2 id="3-问题原因及排查过程"><a href="#3-问题原因及排查过程" class="headerlink" title="3 问题原因及排查过程"></a>3 问题原因及排查过程</h2><p>了解了 Compressed Class Space（CCS），我们就可以知道，这个 OOM 的原因简单解释就是 kclass 实例所在的空间不足了，但是 CCS 默认是 1g, 如果 kclass 实例按 1k 的大小估算，理论上应该可以存储 100万个实例，也就是说我们系统加载了超过 100万个类，除了动态加载模块以外，我们系统的类数量显然达不到这个量级，问题肯定是出在动态加载模块，在动态加载和卸载模型的过程中，出现了 class 的泄露问题</p>
+<h3 id="分析代码"><a href="#分析代码" class="headerlink" title="分析代码"></a>分析代码</h3><p>动态加载模块每次发布新模型的过程：</p>
+<ol>
+<li>通过一个mng系统打包新版本模型，上传到 oss</li>
+<li>引擎从 oss 下载最近的模型 jar 包</li>
+<li>new 一个 UrlClassLoader,用于加载最新的 jar 包</li>
+<li>切换模型版本</li>
+<li>异步下线旧的模型版本</li>
+</ol>
+<p>理论上因为会执行模型下线操作，不会出现类泄露的问题，没办法到这步还是分析不出来，只能采用工具了</p>
+<h3 id="内存dump"><a href="#内存dump" class="headerlink" title="内存dump"></a>内存dump</h3><p>dump一份内存，通过 mat 分析，发现缺失有大量的 UrlClassLoader 没有卸载，通过分析其到 GC Roots 的路径，发现缺失存在两处问题导致了类泄露：</p>
+<ol>
+<li><p>内部使用的 LogFactory 在 getLogger 时，内部会缓存当前类的 ClassLoader 对象，因为 ClassLoader 和 Class 存在双向引用，从而导致已下线模型的类无法卸载，导致 kclass 实例溢出</p>
+</li>
+<li><p>内部使用了 spring 框架的 <code>LocalVariableTableParameterNameDiscoverer</code> 来解析方法参数名称，这个类内部自带一个 parameterNamesCache 缓存，导致其会持有 class 对象的引用，同样因为 ClassLoader 和 Class 存在双向引用，导致该已下线模型的 ClassLoader 及其加载的 Class 都无法卸载，造成了类溢出问题</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">LocalVariableTableParameterNameDiscoverer</span> <span class="keyword">implements</span> <span class="title">ParameterNameDiscoverer</span> </span>&#123;</span><br><span class="line">  ...</span><br><span class="line">    <span class="comment">// the cache uses a nested index (value is a map) to keep the top level cache relatively small in size</span></span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">final</span> Map&lt;Class&lt;?&gt;, Map&lt;Executable, String[]&gt;&gt; parameterNamesCache = <span class="keyword">new</span> ConcurrentHashMap&lt;&gt;(<span class="number">32</span>);</span><br><span class="line">  ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>综上，问题已经排查完毕，终止，在做一些涉及动态加载 class 等功能时，需要特别注意类卸载的问题，尤其要注意一些第三方工具包的使用，很可能因为工具包缓存了某个 Class 或者 ClassLoader 对象导致类无法卸载从而造成内存溢出问题</p>
 
         </div>
 
