@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="keywords" content="Hexo Theme Keep">
+    <meta name="description" content="Hexo Theme Keep">
+    <meta name="author" content="ggox">
+    
+    <title>
+        
+            java9模块化探路之旅 |
+        
+        天驱武库
+    </title>
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <link rel="shortcut icon" href="/images/logo2.svg">
+    
+<link rel="stylesheet" href="/css/font-awesome.min.css">
+
+    <script id="hexo-configurations">
+    let KEEP = window.KEEP || {};
+    KEEP.hexo_config = {"hostname":"ggox.github.io","root":"/","language":"en"};
+    KEEP.theme_config = {"toc":{"enable":false,"number":false,"expand_all":false,"init_open":false},"style":{"primary_color":"#0066CC","avatar":"/images/logo2.svg","favicon":"/images/logo2.svg","article_img_align":"left","left_side_width":"260px","content_max_width":"920px","hover":{"shadow":false,"scale":false},"first_screen":{"enable":true,"background_img":"/images/index4.jpg"},"scroll":{"progress_bar":{"enable":false},"percent":{"enable":false}}},"local_search":{"enable":false,"preload":false},"code_copy":{"enable":false,"style":"default"},"pjax":{"enable":false},"lazyload":{"enable":false},"version":"3.4.5"};
+    KEEP.language_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
+  </script>
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+<div class="progress-bar-container">
+    
+
+    
+</div>
+
+
+<main class="page-container">
+
+    
+
+    <div class="page-main-content">
+
+        <div class="page-main-content-top">
+            <header class="header-wrapper">
+
+    <div class="header-content">
+        <div class="left">
+            
+                <a class="logo-image" href="/">
+                    <img src="/images/kakaxi.svg">
+                </a>
+            
+            <a class="logo-title" href="/">
+                天驱武库
+            </a>
+        </div>
+
+        <div class="right">
+            <div class="pc">
+                <ul class="menu-list">
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/"
+                            >
+                                HOME
+                            </a>
+                        </li>
+                    
+                        <li class="menu-item">
+                            <a class=""
+                               href="/archives"
+                            >
+                                ARCHIVES
+                            </a>
+                        </li>
+                    
+                    
+                </ul>
+            </div>
+            <div class="mobile">
+                
+                <div class="icon-item menu-bar">
+                    <div class="menu-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="header-drawer">
+        <ul class="drawer-menu-list">
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/">HOME</a>
+                </li>
+            
+                <li class="drawer-menu-item flex-center">
+                    <a class=""
+                       href="/archives">ARCHIVES</a>
+                </li>
+            
+        </ul>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+        </div>
+
+        <div class="page-main-content-middle">
+
+            <div class="main-content">
+
+                
+                    <div class="fade-in-down-animation">
+    <div class="article-content-container">
+
+        <div class="article-title">
+            <span class="title-hover-animation">java9模块化探路之旅</span>
+        </div>
+
+        
+            <div class="article-header">
+                <div class="avatar">
+                    <img src="/images/logo2.svg">
+                </div>
+                <div class="info">
+                    <div class="author">
+                        <span class="name">ggox</span>
+                        
+                            <span class="author-label">Lv2</span>
+                        
+                    </div>
+                    <div class="meta-info">
+                        <div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fas fa-edit"></i>&nbsp;
+        <span class="pc">2022-10-06 19:49:04</span>
+        <span class="mobile">2022-10-06 19:49</span>
+    </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fas fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/module/">module</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/java9/">java9</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+</div>
+
+                    </div>
+                </div>
+            </div>
+        
+
+        <div class="article-content markdown-body">
+            <h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>工作了这么多年，除了最开始的公司使用的java1.6和java1.7,后来大部分时间都是用的java8,而且目前国内的java生态针对jdk版本的升级也已经停滞了多年，久而久之，自己对java新特性的了解也放松了警惕。直到前段时间偶然看了一篇文章才了解到，原来最新的jdk19已经开始支持协程了，知识的焦虑感一下子涌了上来，感觉还是得抽时间好好学习学习java新特性了，就从java9的模块化开始吧</p>
+<h1 id="1-模块化语法"><a href="#1-模块化语法" class="headerlink" title="1 模块化语法"></a>1 模块化语法</h1><h2 id="1-1-module-info-java"><a href="#1-1-module-info-java" class="headerlink" title="1.1 module-info.java"></a>1.1 module-info.java</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> com.ggox.modiule.app &#123;</span><br><span class="line">  <span class="comment">// 显式引用</span></span><br><span class="line">  <span class="keyword">requires</span> java.base;</span><br><span class="line">  <span class="comment">// 可传递的引用（隐式可读性）</span></span><br><span class="line">  <span class="keyword">requires</span> transitive java.se;</span><br><span class="line">  <span class="comment">// 导出包</span></span><br><span class="line">  <span class="keyword">exports</span> com.ggox.<span class="keyword">module</span>.api;</span><br><span class="line">  <span class="comment">// 导出包到指定模块（限制导出）</span></span><br><span class="line">  <span class="keyword">exports</span> com.ggox.<span class="keyword">module</span>.infrastructure to com.ggox.portal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-jdk-模块化改造"><a href="#1-2-jdk-模块化改造" class="headerlink" title="1.2 jdk 模块化改造"></a>1.2 jdk 模块化改造</h2><p><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1h6vtq2jfuqj30te12gdjy.jpg" alt="image-20221006200725234"></p>
+<h1 id="2-使用模块"><a href="#2-使用模块" class="headerlink" title="2 使用模块"></a>2 使用模块</h1><h2 id="2-1-helloworld-源码"><a href="#2-1-helloworld-源码" class="headerlink" title="2.1 helloworld 源码"></a>2.1 helloworld 源码</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> com.javamodularity.helloworld;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloWorld</span> </span>&#123;</span><br><span class="line">   </span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String... args)</span> </span>&#123;</span><br><span class="line">      System.out.println(<span class="string">&quot;Hello Modular World!&quot;</span>);</span><br><span class="line">   &#125;</span><br><span class="line">   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://tva1.sinaimg.cn/large/006y8mN6ly1h6vu6lepcqj30g006ut8t.jpg" alt="image-20221006202320283"></p>
+<h2 id="2-2-编译"><a href="#2-2-编译" class="headerlink" title="2.2 编译"></a>2.2 编译</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">javac -d out/helloworld \ </span><br><span class="line">				 src/helloworld/com/javamodularity/helloworld/HelloW orld.java \ </span><br><span class="line">				 src/helloworld/module-info.java</span><br></pre></td></tr></table></figure>
+
+<p>–module-source-path  对应  -sourcepath</p>
+<p>–module-path  对应  -classpath</p>
+<h2 id="2-3-打包"><a href="#2-3-打包" class="headerlink" title="2.3 打包"></a>2.3 打包</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">jar -cfe mods/helloworld.jar com.javamodularity.helloworld.HelloWorld \  </span><br><span class="line">		-C out/helloworld .</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-4-运行"><a href="#2-4-运行" class="headerlink" title="2.4 运行"></a>2.4 运行</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">-- 分解模块格式</span><br><span class="line">java --module-path out \</span><br><span class="line">--module helloworld/com.javamodularity.helloworld.HelloWorld</span><br><span class="line">-- jar包方式运行</span><br><span class="line">java -p mods -m helloworld</span><br></pre></td></tr></table></figure>
+
+<p>–module-path 简写 -p</p>
+<p>–module 简写 -m</p>
+<p>–show-module-resolution  跟踪模块采取的操作</p>
+<h2 id="2-5-模块路径"><a href="#2-5-模块路径" class="headerlink" title="2.5 模块路径"></a>2.5 模块路径</h2><p>模块路径是各个模块 以及包含模块的目录的路径列表。模块路径上的每个目录都可以包含零个或多个模 块定义，其中模块定义可以是分解模块或模块化 JAR 文件。</p>
+<blockquote>
+<p>linux/mac 平台以冒号分隔，windows 平台以分号分隔</p>
+</blockquote>
+<h2 id="2-6-链接模块"><a href="#2-6-链接模块" class="headerlink" title="2.6 链接模块"></a>2.6 链接模块</h2><p>在编译和运行时阶段之间， Java 9 引入了一个可选的链接阶段。通过使用一个名为 jlink 的新工具，可以创建仅包含运行应用程序所需的模块的运行时映像。</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">jlink --module-path mods/:<span class="variable">$JAVA_HOME</span>/jmods \ </span><br><span class="line">			--add-modules helloworld \</span><br><span class="line">			--launcher hello=helloworld \ </span><br><span class="line">			--output helloworld-image</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-7-其他"><a href="#2-7-其他" class="headerlink" title="2.7 其他"></a>2.7 其他</h2><p>–list-modules 列出所有的平台模块</p>
+<p>–describe-module 检查平台模 块的模块声明以验证猜测l是否正确</p>
+<h1 id="3-服务"><a href="#3-服务" class="headerlink" title="3 服务"></a>3 服务</h1><h2 id="3-1-服务提供"><a href="#3-1-服务提供" class="headerlink" title="3.1 服务提供"></a>3.1 服务提供</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> com.ggox.api.impl &#123;</span><br><span class="line">	<span class="keyword">requires</span> com.ggox.api;</span><br><span class="line">	provides com.ggox.api.Caller with com.ggox.api.CallerImpl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>服务允许一个模块向其他模块提供实现，而不导出具体的实现类</p>
+<h2 id="3-2-服务消费"><a href="#3-2-服务消费" class="headerlink" title="3.2 服务消费"></a>3.2 服务消费</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> com.ggox.app &#123;</span><br><span class="line">  <span class="keyword">requires</span> com.ggox.api;</span><br><span class="line">  uses com.ggox.api.Caller;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-3-服务使用"><a href="#3-3-服务使用" class="headerlink" title="3.3 服务使用"></a>3.3 服务使用</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Iterable&lt;Caller&gt; callers = 	ServiceLoader.load(Caller.class);</span><br><span class="line"><span class="keyword">for</span> (Caller caller: callers) &#123;</span><br><span class="line">  System.out.println(caller.getClass());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-4-服务链接"><a href="#3-4-服务链接" class="headerlink" title="3.4 服务链接"></a>3.4 服务链接</h2><p>jlink  –add-modules</p>
+<p>不支持自动服务绑定，需要手动 add-modiles</p>
+<h1 id="4-模块化设计模式"><a href="#4-模块化设计模式" class="headerlink" title="4 模块化设计模式"></a>4 模块化设计模式</h1><h2 id="4-1-确定模块的边界"><a href="#4-1-确定模块的边界" class="headerlink" title="4.1 确定模块的边界"></a>4.1 确定模块的边界</h2><ul>
+<li>可理解性</li>
+<li>可重用性</li>
+<li>可变性</li>
+<li>团队合作</li>
+</ul>
+<h2 id="4-2-精益化模块"><a href="#4-2-精益化模块" class="headerlink" title="4.2 精益化模块"></a>4.2 精益化模块</h2><pre><code>* 模块公共区域面积的大小
+* 模块内部实现的大小
+</code></pre>
+<h2 id="4-3-API模块"><a href="#4-3-API模块" class="headerlink" title="4.3 API模块"></a>4.3 API模块</h2><h3 id="4-3-1-API模块应该包含什么"><a href="#4-3-1-API模块应该包含什么" class="headerlink" title="4.3.1 API模块应该包含什么"></a>4.3.1 API模块应该包含什么</h3><ul>
+<li>接口</li>
+<li>枚举</li>
+<li>注释</li>
+<li>…</li>
+</ul>
+<h3 id="4-3-2-隐式可读性"><a href="#4-3-2-隐式可读性" class="headerlink" title="4.3.2 隐式可读性"></a>4.3.2 隐式可读性</h3><p>-Xlint:exports 如果使用 -Xlint:exports 进行编译，那么导出类型中应该以传递方式依赖但却没有依赖的类型就会产生警告信息</p>
+<h3 id="4-3-3-带有默认实现的API模块"><a href="#4-3-3-带有默认实现的API模块" class="headerlink" title="4.3.3 带有默认实现的API模块"></a>4.3.3 带有默认实现的API模块</h3><p>当 API 位于一个带高实现的模块中时，实现的依赖顶也会传递给替代实现</p>
+<h2 id="4-4-聚合器模块"><a href="#4-4-聚合器模块" class="headerlink" title="4.4 聚合器模块"></a>4.4 聚合器模块</h2><h3 id="4-4-1-在模块上构建一个-facade"><a href="#4-4-1-在模块上构建一个-facade" class="headerlink" title="4.4.1 在模块上构建一个 facade"></a>4.4.1 在模块上构建一个 facade</h3><p>隐式可读性是可以传递的</p>
+<ul>
+<li>java.se</li>
+<li>java.se.ee</li>
+</ul>
+<h3 id="4-4-2-安全拆分模块"><a href="#4-4-2-安全拆分模块" class="headerlink" title="4.4.2 安全拆分模块"></a>4.4.2 安全拆分模块</h3><p>保证向后兼容新</p>
+<h2 id="4-5-避免循环依赖"><a href="#4-5-避免循环依赖" class="headerlink" title="4.5 避免循环依赖"></a>4.5 避免循环依赖</h2><h3 id="4-5-1-拆分包"><a href="#4-5-1-拆分包" class="headerlink" title="4.5.1 拆分包"></a>4.5.1 拆分包</h3><p>干净拆分：不同模块不能具有相同类型</p>
+<h3 id="4-5-2-打破循环"><a href="#4-5-2-打破循环" class="headerlink" title="4.5.2 打破循环"></a>4.5.2 打破循环</h3><ul>
+<li>循环关系是良性的，则两个相互依赖的模块可以合并成一个模块</li>
+<li>引入间接层打破循环</li>
+</ul>
+<h2 id="4-6-可选的依赖关系"><a href="#4-6-可选的依赖关系" class="headerlink" title="4.6 可选的依赖关系"></a>4.6 可选的依赖关系</h2><h3 id="4-6-1-编译时依赖关系"><a href="#4-6-1-编译时依赖关系" class="headerlink" title="4.6.1 编译时依赖关系"></a>4.6.1 编译时依赖关系</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> framework &#123;</span><br><span class="line">  <span class="keyword">requires</span> <span class="keyword">static</span> fastjsonlib;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>即使 fastjsonlib 在模块路径上，requires static fastjsonlib 子句也不会导致 fastjsonlib 在运行时被解析</p>
+<h3 id="4-6-2-使用服务实现可选依赖关系"><a href="#4-6-2-使用服务实现可选依赖关系" class="headerlink" title="4.6.2 使用服务实现可选依赖关系"></a>4.6.2 使用服务实现可选依赖关系</h3><p>浸入式的重新设计，需要使用服务 API</p>
+<h2 id="4-7-版本化模块"><a href="#4-7-版本化模块" class="headerlink" title="4.7 版本化模块"></a>4.7 版本化模块</h2><p>使用jar工具时， –module-version=<V> 给 模块化的 jar 包增加版本信息</p>
+<p>实际模块系统解析不会使用版本信息，委托给构建工具（maven、gradle）完成，版本信息外部化到 pom 等文件中</p>
+<ol>
+<li>构建工具从存储库下载依赖项，由构建描述符中的版本信息控制下载哪个版本</li>
+<li>构建工具使用下载的版本设置模块路径</li>
+<li>Java 编译器通过模块路径中解析模块图，为了保证应用程序正常运行，不能包含重复版本，模块的重复版本会导致错误</li>
+</ol>
+<h2 id="4-8-资源封装"><a href="#4-8-资源封装" class="headerlink" title="4.8 资源封装"></a>4.8 资源封装</h2><h3 id="4-8-1-从模块加载资源"><a href="#4-8-1-从模块加载资源" class="headerlink" title="4.8.1 从模块加载资源"></a>4.8.1 从模块加载资源</h3><p>默认情况下，模块中包内的资源被强制封装，这些资源只能在模块内部使用，就像非导出包中的类一样</p>
+<p>资源加载方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourcesInModule</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String... args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      Class clazz = ResourcesInModule.class;</span><br><span class="line">      InputStream cz_pkg = clazz.getResourceAsStream(<span class="string">&quot;resource_in_package.txt&quot;</span>); <span class="comment">//&lt;1&gt;</span></span><br><span class="line">      URL cz_tl = clazz.getResource(<span class="string">&quot;/top_level_resource.txt&quot;</span>); <span class="comment">//&lt;2&gt;</span></span><br><span class="line"></span><br><span class="line">      Module m = clazz.getModule(); <span class="comment">//&lt;3&gt;</span></span><br><span class="line">      InputStream m_pkg = m.getResourceAsStream(</span><br><span class="line">        <span class="string">&quot;javamodularity/firstresourcemodule/resource_in_package.txt&quot;</span>); <span class="comment">//&lt;4&gt;</span></span><br><span class="line">      InputStream m_tl = m.getResourceAsStream(<span class="string">&quot;top_level_resource.txt&quot;</span>); <span class="comment">//&lt;5&gt;</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">assert</span> Stream.of(cz_pkg, cz_tl, m_pkg, m_tl)</span><br><span class="line">                   .noneMatch(Objects::isNull);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="4-8-2-跨模块加载资源"><a href="#4-8-2-跨模块加载资源" class="headerlink" title="4.8.2 跨模块加载资源"></a>4.8.2 跨模块加载资源</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ResourcesOtherModule</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String... args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">      Optional&lt;Module&gt; otherModule = ModuleLayer.boot().findModule(<span class="string">&quot;secondresourcemodule&quot;</span>); <span class="comment">//&lt;1&gt;</span></span><br><span class="line"></span><br><span class="line">      otherModule.ifPresent(other -&gt; &#123;</span><br><span class="line">         <span class="keyword">try</span> &#123;</span><br><span class="line">            InputStream m_tl = other.getResourceAsStream(<span class="string">&quot;top_level_resource2.txt&quot;</span>); <span class="comment">//&lt;2&gt;</span></span><br><span class="line">            InputStream m_pkg = other.getResourceAsStream(</span><br><span class="line">                <span class="string">&quot;javamodularity/secondresourcemodule/resource_in_package2.txt&quot;</span>); <span class="comment">//&lt;3&gt;</span></span><br><span class="line">            InputStream m_class = other.getResourceAsStream(</span><br><span class="line">                <span class="string">&quot;javamodularity/secondresourcemodule/A.class&quot;</span>); <span class="comment">//&lt;4&gt;</span></span><br><span class="line">            InputStream m_meta = other.getResourceAsStream(<span class="string">&quot;META-INF/resource_in_metainf.txt&quot;</span>); <span class="comment">//&lt;5&gt;</span></span><br><span class="line">            InputStream cz_pkg =</span><br><span class="line">              Class.forName(<span class="string">&quot;javamodularity.secondresourcemodule.A&quot;</span>)</span><br><span class="line">                   .getResourceAsStream(<span class="string">&quot;resource_in_package2.txt&quot;</span>); <span class="comment">//&lt;6&gt;</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">assert</span> Stream.of(m_tl, m_class, m_meta)</span><br><span class="line">                         .noneMatch(Objects::isNull);</span><br><span class="line">            <span class="keyword">assert</span> Stream.of(m_pkg, cz_pkg)</span><br><span class="line">                         .allMatch(Objects::isNull);</span><br><span class="line"></span><br><span class="line">         &#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">         &#125;</span><br><span class="line">      &#125;);</span><br><span class="line">   &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li>可以通过引导层获取一个 Module</li>
+<li>可以随时加载来自其他模块的顶级资源</li>
+<li>在默认情况下，来自其他模块的包中的资1原是被封装的，所以此时返回 null .class 文件存在例外;这些文件可以始终从另一个模块加载的</li>
+<li>因为 META-INF不是一个有效的包名称，所以可以访问该目录中的资掘</li>
+<li>虽然通过使用 Class: :forName 可以获取一个 Class<A> 实例，但就像第 3 步那样，通过该实例加载封装资源时将返回 null</li>
+</ol>
+<h3 id="4-8-3-使用-ResourceBundle-类"><a href="#4-8-3-使用-ResourceBundle-类" class="headerlink" title="4.8.3 使用 ResourceBundle 类"></a>4.8.3 使用 <code>ResourceBundle</code> 类</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DutchTranslationsProvider</span> <span class="keyword">extends</span> <span class="title">AbstractResourceBundleProvider</span></span></span><br><span class="line"><span class="class">                                       <span class="keyword">implements</span> <span class="title">TranslationsProvider</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> <span class="keyword">static</span> Locale DUTCH = Locale.forLanguageTag(<span class="string">&quot;nl&quot;</span>);</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">toBundleName</span><span class="params">(String baseName, Locale locale)</span> </span>&#123;</span><br><span class="line">    String bundleName = <span class="keyword">super</span>.toBundleName(baseName, locale);</span><br><span class="line">    <span class="keyword">if</span> (DUTCH.equals(locale)) &#123;</span><br><span class="line">        <span class="keyword">int</span> index = bundleName.lastIndexOf(<span class="string">&#x27;.&#x27;</span>);</span><br><span class="line">        <span class="keyword">return</span> bundleName.substring(<span class="number">0</span>, index + <span class="number">1</span>) + <span class="string">&quot;dutch&quot;</span> + bundleName.substring(index);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> bundleName;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  <span class="meta">@Override</span></span><br><span class="line">  <span class="function"><span class="keyword">public</span> ResourceBundle <span class="title">getBundle</span><span class="params">(String baseName, Locale locale)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (DUTCH.equals(locale)) &#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">super</span>.getBundle(baseName, locale);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> resourcebundle.dutch &#123;</span><br><span class="line">  <span class="keyword">requires</span> resourcebundle.main;</span><br><span class="line"></span><br><span class="line">  provides javamodularity.resourcebundle.spi.TranslationsProvider</span><br><span class="line">      with javamodularity.resourcebundle.dutch.DutchTranslationsProvider;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="5-高级模块化模式"><a href="#5-高级模块化模式" class="headerlink" title="5 高级模块化模式"></a>5 高级模块化模式</h1><h2 id="5-1-重温强封装性"><a href="#5-1-重温强封装性" class="headerlink" title="5.1 重温强封装性"></a>5.1 重温强封装性</h2><h3 id="5-1-1-深度反射"><a href="#5-1-1-深度反射" class="headerlink" title="5.1.1 深度反射"></a>5.1.1 深度反射</h3><p>即使导出的包，模块中 setAccessable 对非公共字段不能使用</p>
+<h3 id="5-1-2-开放式模块和包"><a href="#5-1-2-开放式模块和包" class="headerlink" title="5.1.2 开放式模块和包"></a>5.1.2 开放式模块和包</h3><p>开放整个模块：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">open <span class="keyword">module</span> deepreflection &#123;</span><br><span class="line">  <span class="keyword">exports</span> api;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>开放某个包：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> deepreflection &#123;</span><br><span class="line">  <span class="keyword">exports</span> api;</span><br><span class="line">  opens api;</span><br><span class="line">  opens internal;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有限定的开放某个包：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">module</span> deepreflection &#123;</span><br><span class="line">  <span class="keyword">exports</span> api;</span><br><span class="line">  opens internal to library;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>有时需要深度反射第三方模块包，或者jdk的平台模块，此时可以：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-- add-opens &lt;module&gt;/&lt;package&gt;=&lt;targetmodule&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-1-3-依赖注入"><a href="#5-1-3-依赖注入" class="headerlink" title="5.1.3 依赖注入"></a>5.1.3 依赖注入</h3><p>反射的替代方案：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Main</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String... args)</span> </span>&#123;</span><br><span class="line">    Lookup lookup = MethodHandles.lookup();</span><br><span class="line">    OrmFramework ormFramework = <span class="keyword">new</span> OrmFramework(lookup);</span><br><span class="line"></span><br><span class="line">    Book book = ormFramework.loadfromDatabase(<span class="string">&quot;/* query */&quot;</span>, Book.class);</span><br><span class="line"></span><br><span class="line">    System.out.println(book.getTitle());</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrmFramework</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">private</span> Lookup lookup;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="title">OrmFramework</span><span class="params">(Lookup lookup)</span> </span>&#123; <span class="keyword">this</span>.lookup = lookup; &#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">public</span> &lt;T&gt; <span class="function">T <span class="title">loadfromDatabase</span><span class="params">(String query, Class&lt;T&gt; clazz)</span> </span>&#123;</span><br><span class="line">     <span class="keyword">try</span> &#123;</span><br><span class="line">       MethodHandle ctor = lookup.findConstructor(clazz, MethodType.methodType(<span class="keyword">void</span>.class));</span><br><span class="line">       T entity =  (T) ctor.invoke();</span><br><span class="line"></span><br><span class="line">       Lookup privateLookup = MethodHandles.privateLookupIn(clazz, lookup);</span><br><span class="line">       VarHandle title = privateLookup.findVarHandle(clazz, <span class="string">&quot;title&quot;</span>, String.class); <span class="comment">// Name/type presumably found in some orm mapping config</span></span><br><span class="line">       title.set(entity, <span class="string">&quot;Loaded from database!&quot;</span>);</span><br><span class="line">       <span class="keyword">return</span> entity;</span><br><span class="line">     &#125; <span class="keyword">catch</span>(Throwable e) &#123;</span><br><span class="line">       <span class="keyword">throw</span> <span class="keyword">new</span> RuntimeException(e);</span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-2-模块的反射"><a href="#5-2-模块的反射" class="headerlink" title="5.2 模块的反射"></a>5.2 模块的反射</h2><h3 id="5-2-1-内省"><a href="#5-2-1-内省" class="headerlink" title="5.2.1 内省"></a>5.2.1 内省</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Introspection</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String... args)</span> </span>&#123;</span><br><span class="line">    Module <span class="keyword">module</span> = String.class.getModule();</span><br><span class="line"></span><br><span class="line">    String name1 = <span class="keyword">module</span>.getName(); <span class="comment">// Name as defined in module-info.java</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Module name: &quot;</span> + name1);</span><br><span class="line"></span><br><span class="line">    Set&lt;String&gt; packages1 = <span class="keyword">module</span>.getPackages(); <span class="comment">// Lists all packages in the module</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Packages in module: &quot;</span> + packages1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// The methods above are convenience methods that return</span></span><br><span class="line">    <span class="comment">// information from the Module&#x27;s ModuleDescriptor:</span></span><br><span class="line">    ModuleDescriptor descriptor = <span class="keyword">module</span>.getDescriptor();</span><br><span class="line">    String name2 = descriptor.name(); <span class="comment">// Same as module.getName();</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Module name from descriptor: &quot;</span> + name2);</span><br><span class="line"></span><br><span class="line">    Set&lt;String&gt; packages2 = descriptor.packages(); <span class="comment">// Same as module.getPackages();</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Packages from descriptor: &quot;</span> + packages2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Through ModuleDescriptor, all information from module-info.java is exposed:</span></span><br><span class="line">    Set&lt;Exports&gt; <span class="keyword">exports</span> = descriptor.<span class="keyword">exports</span>(); <span class="comment">// All exports, possibly qualified</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Exports: &quot;</span> + <span class="keyword">exports</span>);</span><br><span class="line"></span><br><span class="line">    Set&lt;String&gt; uses = descriptor.uses(); <span class="comment">// All services used by this module</span></span><br><span class="line">    System.out.println(<span class="string">&quot;Uses: &quot;</span> + uses);</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-2-修改模块"><a href="#5-2-2-修改模块" class="headerlink" title="5.2.2 修改模块"></a>5.2.2 修改模块</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 将先前没有导出的包公开给另 一个模块</span></span><br><span class="line">addExports(String packageName, Module target);</span><br><span class="line">  </span><br><span class="line"><span class="comment">// 开放一个包，以便 另一个模块进行深度反射</span></span><br><span class="line">addOpens(String packageName, Module target);</span><br><span class="line">  </span><br><span class="line"><span class="comment">// 添加当前模块到另一个模块的读取关系</span></span><br><span class="line">addReads(Module other);</span><br><span class="line"></span><br><span class="line"><span class="comment">// 表明当前模块想要通过 ServiceLoader 使用额外的服务类型</span></span><br><span class="line">addUses(Class&lt;?&gt; serviceType);</span><br></pre></td></tr></table></figure>
+
+<h3 id="5-2-3-注释"><a href="#5-2-3-注释" class="headerlink" title="5.2.3 注释"></a>5.2.3 注释</h3><p>自定义注解：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Retention(RetentionPolicy.RUNTIME)</span></span><br><span class="line"><span class="meta">@Target(value=&#123;PACKAGE, MODULE&#125;)</span></span><br><span class="line"><span class="keyword">public</span> <span class="meta">@interface</span> CustomAnnotation &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用:</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> javamodularity.annotatedmodule.CustomAnnotation;</span><br><span class="line"></span><br><span class="line"><span class="meta">@CustomAnnotation</span></span><br><span class="line"><span class="keyword">module</span> annotated &#123;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="5-3-容器应用程序模式"><a href="#5-3-容器应用程序模式" class="headerlink" title="5.3 容器应用程序模式"></a>5.3 容器应用程序模式</h2><p>todo</p>
+
+        </div>
+
+        
+
+        
+            <ul class="post-tags-box">
+                
+                    <li class="tag-item">
+                        <a href="/tags/module/">#module</a>&nbsp;
+                    </li>
+                
+                    <li class="tag-item">
+                        <a href="/tags/java9/">#java9</a>&nbsp;
+                    </li>
+                
+            </ul>
+        
+
+        
+            <div class="article-nav">
+                
+                
+                    <div class="article-next">
+                        <a class="next"
+                           rel="next"
+                           href="/2022/06/26/%E3%80%90%E6%90%AC%E7%A0%96%E7%AC%94%E8%AE%B0%E3%80%91%E8%AE%B0%E4%B8%80%E6%AC%A1Compress-Class-Space-OOM%E9%97%AE%E9%A2%98/"
+                        >
+                            <span class="title flex-center">
+                                <span class="post-nav-title-item">【搬砖笔记】记一次Compress Class Space OOM问题</span>
+                                <span class="post-nav-item">Next posts</span>
+                            </span>
+                            <span class="right arrow-icon flex-center">
+                              <i class="fas fa-chevron-right"></i>
+                            </span>
+                        </a>
+                    </div>
+                
+            </div>
+        
+
+        
+    </div>
+</div>
+
+
+                
+            </div>
+
+        </div>
+
+        <div class="page-main-content-bottom">
+            <footer class="footer">
+    <div class="info-container">
+        <div class="copyright-info info-item">
+            &copy;
+            
+              <span>2020</span>
+              -
+            
+            2022&nbsp;<i class="fas fa-heart icon-animate"></i>&nbsp;<a href="/">ggox</a>
+        </div>
+        
+        <div class="theme-info info-item">
+            Powered by <a target="_blank" href="https://hexo.io">Hexo</a>&nbsp;|&nbsp;Theme&nbsp;<a class="theme-version" target="_blank" href="https://github.com/XPoet/hexo-theme-keep">Keep v3.4.5</a>
+        </div>
+        
+        
+    </div>
+</footer>
+
+        </div>
+    </div>
+
+    
+        <div class="post-tools">
+            <div class="post-tools-container">
+    <ul class="tools-list">
+        <!-- TOC aside toggle -->
+        
+
+        <!-- go comment -->
+        
+    </ul>
+</div>
+
+        </div>
+    
+
+    <div class="right-bottom-side-tools">
+        <div class="side-tools-container">
+    <ul class="side-tools-list">
+        <li class="tools-item tool-font-adjust-plus flex-center">
+            <i class="fas fa-search-plus"></i>
+        </li>
+
+        <li class="tools-item tool-font-adjust-minus flex-center">
+            <i class="fas fa-search-minus"></i>
+        </li>
+
+        <li class="tools-item tool-expand-width flex-center">
+            <i class="fas fa-arrows-alt-h"></i>
+        </li>
+
+        <li class="tools-item tool-dark-light-toggle flex-center">
+            <i class="fas fa-moon"></i>
+        </li>
+
+        <!-- rss -->
+        
+
+        
+            <li class="tools-item tool-scroll-to-top flex-center">
+                <i class="fas fa-arrow-up"></i>
+            </li>
+        
+
+        <li class="tools-item tool-scroll-to-bottom flex-center">
+            <i class="fas fa-arrow-down"></i>
+        </li>
+    </ul>
+
+    <ul class="exposed-tools-list">
+        <li class="tools-item tool-toggle-show flex-center">
+            <i class="fas fa-cog fa-spin"></i>
+        </li>
+        
+    </ul>
+</div>
+
+    </div>
+
+    
+
+    <div class="image-viewer-container">
+    <img src="">
+</div>
+
+
+    
+
+</main>
+
+
+
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/main.js"></script>
+
+<script src="/js/header-shrink.js"></script>
+
+<script src="/js/back2top.js"></script>
+
+<script src="/js/dark-light-toggle.js"></script>
+
+
+
+
+
+
+
+
+<div class="post-scripts">
+    
+</div>
+
+
+
+</body>
+</html>
