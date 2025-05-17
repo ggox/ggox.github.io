@@ -9,7 +9,7 @@
     
     <title>
         
-            《深入理解jvm字节码》读书笔记系列四：javac编译原理 |
+            epoll流程梳理 |
         
         天驱武库
     </title>
@@ -122,7 +122,7 @@
     <div class="article-content-container">
 
         <div class="article-title">
-            <span class="title-hover-animation">《深入理解jvm字节码》读书笔记系列四：javac编译原理</span>
+            <span class="title-hover-animation">epoll流程梳理</span>
         </div>
 
         
@@ -141,8 +141,8 @@
                         <div class="article-meta-info">
     <span class="article-date article-meta-item">
         <i class="fas fa-edit"></i>&nbsp;
-        <span class="pc">2022-04-07 23:10:08</span>
-        <span class="mobile">2022-04-07 23:10</span>
+        <span class="pc">2025-05-11 20:28:00</span>
+        <span class="mobile">2025-05-11 20:28</span>
     </span>
     
     
@@ -151,15 +151,15 @@
             <ul>
                 
                     <li>
-                        <a href="/tags/jvm/">jvm</a>&nbsp;
+                        <a href="/tags/linux/">linux</a>&nbsp;
                     </li>
                 
                     <li>
-                        | <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">编译原理</a>&nbsp;
+                        | <a href="/tags/io-nio/">io/nio</a>&nbsp;
                     </li>
                 
                     <li>
-                        | <a href="/tags/compiler/">compiler</a>&nbsp;
+                        | <a href="/tags/java/">java</a>&nbsp;
                     </li>
                 
             </ul>
@@ -178,34 +178,50 @@
         
 
         <div class="article-content markdown-body">
-            <h1 id="javac-编译原理简介"><a href="#javac-编译原理简介" class="headerlink" title="javac 编译原理简介"></a>javac 编译原理简介</h1><blockquote>
-<p>OpenJdk 地址：<a class="link"   target="_blank" rel="noopener" href="https://hg.openjdk.java.net/" >https://hg.openjdk.java.net/<i class="fas fa-external-link-alt"></i></a></p>
+            <h1 id="epoll执行流程"><a href="#epoll执行流程" class="headerlink" title="epoll执行流程"></a>epoll执行流程</h1><p>epoll 核心的三个系统调用：epoll_create、epoll_ctl、epoll_wait</p>
+<h2 id="epoll-create"><a href="#epoll-create" class="headerlink" title="epoll_create"></a>epoll_create</h2><ul>
+<li>内核创建一个<code>eventpoll</code>对象</li>
+<li>有相应的<code>struct file</code>与之关联</li>
+<li>将关联的<code>file</code>放入到进程打开的文件列表<code>fd_array</code>中</li>
+<li>返回数组下表，也即文件描述符</li>
+</ul>
+<p><code>eventpoll</code>的核心结构如下：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">eventpoll</span> &#123;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 等待队列，阻塞在epoll上的进程会放在这里</span></span><br><span class="line">    <span class="keyword">wait_queue_head_t</span> wq;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 就绪队列，IO就绪的socket连接会放在这里</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">rdllist</span>;</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">// 红黑树用来管理所有监听的socket连接</span></span><br><span class="line">    <span class="class"><span class="keyword">struct</span> <span class="title">rb_root</span> <span class="title">rbr</span>;</span></span><br><span class="line"></span><br><span class="line">    ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="epoll-ctl"><a href="#epoll-ctl" class="headerlink" title="epoll_ctl"></a>epoll_ctl</h2><ul>
+<li>创建代表<code>socket</code>的数据结构<code>struct epitem</code></li>
+<li>在<code>socket</code>的等待队列上创建等待项<code>wait_queue_t</code>并注册<code>epoll</code>的回调函数<code>ep_poll_callback</code></li>
+<li>将<code>epitem</code>插入到<code>epoll</code>中的红黑树<code>struct rb_root rbr</code>中</li>
+</ul>
+<h2 id="epoll-wait"><a href="#epoll-wait" class="headerlink" title="epoll_wait"></a>epoll_wait</h2><ul>
+<li>用户程序调用<code>epoll_wait</code>后，内核查找<code>epoll</code>中的就绪队列<code>eventpoll-&gt;rdllist</code>，检查是否有<strong>IO就绪</strong>的<code>epitem</code>，如果有就绪的<code>epitem</code>,则将就绪的<code>socket</code>信息封装成<code>epoll_event</code>返回</li>
+<li>如果没有就绪项，则创建等待项<code>wait_queue_t</code>，将用户进程的<code>fd</code>关联到<code>wait_queue_t -&gt; private</code>上，并注册回调函数<code>default_wake_function</code>，最后将等待项添加到<code>epoll</code>的等待队列中，用户进程让出<code>CPU</code>，进入阻塞状态</li>
+</ul>
+<h2 id="整个流程"><a href="#整个流程" class="headerlink" title="整个流程"></a>整个流程</h2><ul>
+<li>当网络数据包在软中断中经过内核协议栈的处理到达<code>socket</code>的接收缓冲区时，紧接着会调用<code>socket</code>的数据就绪回调指针<code>sk_data_ready</code>，回调函数为<code>sock_def_readable</code>。在<code>socket</code>的等待队列中找出等待项，其中等待项中注册的回调函数为<code>ep_poll_callback</code>。</li>
+<li>在回调函数<code>ep_poll_callback</code>中，根据<code>struct eppoll_entry</code>中的<code>struct wait_queue_t wait</code>通过<code>container_of宏</code>找到<code>eppoll_entry</code>对象并通过它的<code>base</code>指针找到封装<code>socket</code>的数据结构<code>struct epitem</code>，并将它加入到<code>epoll</code>中的就绪队列<code>rdllist</code>中。</li>
+<li>随后查看<code>epoll</code>中的等待队列中是否有等待项，也就是说查看是否有进程阻塞在<code>epoll_wait</code>上等待<code>IO就绪</code>的<code>socket</code>。如果没有等待项，则软中断处理完成。</li>
+<li>如果有等待项，则回到注册在等待项中的回调函数<code>default_wake_function</code>,在回调函数中唤醒<code>阻塞进程</code>，并将就绪队列<code>rdllist</code>中的<code>epitem</code>的<code>IO就绪</code>socket信息封装到<code>struct epoll_event</code>中返回。</li>
+<li>用户进程拿到<code>epoll_event</code>获取<code>IO就绪</code>的socket，发起系统IO调用读取数据。</li>
+</ul>
+<h1 id="对比select、poll的性能优化点"><a href="#对比select、poll的性能优化点" class="headerlink" title="对比select、poll的性能优化点"></a>对比select、poll的性能优化点</h1><ul>
+<li><code>epoll</code>在内核中通过<code>红黑树</code>管理海量的连接，所以在调用<code>epoll_wait</code>获取<code>IO就绪</code>的socket时，不需要传入监听的socket文件描述符。从而避免了海量的文件描述符集合在<code>用户空间</code>和<code>内核空间</code>中来回复制。</li>
+</ul>
+<blockquote>
+<p><code>select，poll</code>每次调用时都需要传递全量的文件描述符集合，导致大量频繁的拷贝操作。</p>
 </blockquote>
-<h2 id="1-javac的七个阶段"><a href="#1-javac的七个阶段" class="headerlink" title="1 javac的七个阶段"></a>1 javac的七个阶段</h2><h3 id="1-1-parser"><a href="#1-1-parser" class="headerlink" title="1.1 parser"></a>1.1 parser</h3><h4 id="1-1-1-词法分析"><a href="#1-1-1-词法分析" class="headerlink" title="1.1.1 词法分析"></a>1.1.1 词法分析</h4><p><code>com.sun.tools.javac.parser.Scanner</code></p>
-<h4 id="1-1-2-语法分析"><a href="#1-1-2-语法分析" class="headerlink" title="1.1.2 语法分析"></a>1.1.2 语法分析</h4><p><code>com.sun.tools.javac.parser.JavacParser</code></p>
-<h3 id="1-2-enter"><a href="#1-2-enter" class="headerlink" title="1.2 enter"></a>1.2 enter</h3><p><code>com.sun.tools.javac.comp.Enter</code></p>
-<p><code>com.sun.tools.javac.comp.MemberEnter</code></p>
-<p>符号表 <code>com.sun.tools.javac.code.Symbol</code></p>
-<p>作用域 <code>com.sun.tools.javac.code.Scope</code></p>
-<p>生成默认构造方法：<init></p>
-<h3 id="1-3-process"><a href="#1-3-process" class="headerlink" title="1.3 process"></a>1.3 process</h3><p>注解处理：<code>com.sun.tools.javac.processing.JavacProcessingEnvironment</code></p>
 <ul>
-<li>lombok框架实现原理</li>
+<li><code>epoll</code>仅会通知<code>IO就绪</code>的<code>socket</code>。避免了在用户空间遍历的开销。</li>
 </ul>
-<h3 id="1-4-attr"><a href="#1-4-attr" class="headerlink" title="1.4 attr"></a>1.4 attr</h3><p>语义分析的一部分：语义合法性检查、常量折叠等</p>
-<p><code>com.sun.tools.javac.comp.Attr</code></p>
+<blockquote>
+<p><code>select，poll</code>只会在<code>IO就绪</code>的socket上打好标记，依然是全量返回，所以在用户空间还需要用户程序在一次遍历全量集合找出具体<code>IO就绪</code>的socket。</p>
+</blockquote>
 <ul>
-<li><code>com.sun.tools.javac.comp.Check</code></li>
-<li><code>com.sun.tools.javac.comp.Resolve</code></li>
-<li><code>com.sun.tools.javac.comp.ConstFold</code></li>
-<li><code>com.sun.tools.javac.comp.Infer</code></li>
+<li><code>epoll</code>通过在<code>socket</code>的等待队列上注册回调函数<code>ep_poll_callback</code>通知用户程序<code>IO就绪</code>的socket。避免了在内核中轮询的开销。</li>
 </ul>
-<h3 id="1-5-flow"><a href="#1-5-flow" class="headerlink" title="1.5 flow"></a>1.5 flow</h3><p><code>com.sun.tools.javac.comp.Flow</code></p>
-<h3 id="1-6-desugar"><a href="#1-6-desugar" class="headerlink" title="1.6 desugar"></a>1.6 desugar</h3><p>主要用于解除语法糖</p>
-<p><code>com.sun.tools.javac.comp.TransTypes</code></p>
-<p><code>com.sun.tools.javac.comp.Lower</code></p>
-<h3 id="1-7-generate"><a href="#1-7-generate" class="headerlink" title="1.7 generate"></a>1.7 generate</h3><p>遍历AST,层层最终的Class文件</p>
-<p><code>com.sun.tools.javac.jvm.Gen</code></p>
+<blockquote>
+<p>大部分情况下<code>socket</code>上并不总是<code>IO活跃</code>的，在面对海量连接的情况下，<code>select，poll</code>采用内核轮询的方式获取<code>IO活跃</code>的socket，无疑是性能低下的核心原因。</p>
+</blockquote>
 
         </div>
 
@@ -215,15 +231,15 @@
             <ul class="post-tags-box">
                 
                     <li class="tag-item">
-                        <a href="/tags/jvm/">#jvm</a>&nbsp;
+                        <a href="/tags/linux/">#linux</a>&nbsp;
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/%E7%BC%96%E8%AF%91%E5%8E%9F%E7%90%86/">#编译原理</a>&nbsp;
+                        <a href="/tags/io-nio/">#io/nio</a>&nbsp;
                     </li>
                 
                     <li class="tag-item">
-                        <a href="/tags/compiler/">#compiler</a>&nbsp;
+                        <a href="/tags/java/">#java</a>&nbsp;
                     </li>
                 
             </ul>
@@ -232,29 +248,14 @@
         
             <div class="article-nav">
                 
-                    <div class="article-prev">
-                        <a class="prev"
-                           rel="prev"
-                           href="/2022/05/29/ASM-Javassist%E4%BD%BF%E7%94%A8%E7%A4%BA%E4%BE%8B/"
-                        >
-                            <span class="left arrow-icon flex-center">
-                              <i class="fas fa-chevron-left"></i>
-                            </span>
-                            <span class="title flex-center">
-                                <span class="post-nav-title-item">ASM&amp;Javassist使用示例</span>
-                                <span class="post-nav-item">Prev posts</span>
-                            </span>
-                        </a>
-                    </div>
-                
                 
                     <div class="article-next">
                         <a class="next"
                            rel="next"
-                           href="/2021/11/21/%E3%80%8A%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3jvm%E5%AD%97%E8%8A%82%E7%A0%81%E3%80%8B%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0%E7%B3%BB%E5%88%97%E4%B8%89%EF%BC%9A%E5%AD%97%E8%8A%82%E7%A0%81%E8%BF%9B%E9%98%B6/"
+                           href="/2022/10/06/java9%E6%A8%A1%E5%9D%97%E5%8C%96%E6%8E%A2%E8%B7%AF%E4%B9%8B%E6%97%85/"
                         >
                             <span class="title flex-center">
-                                <span class="post-nav-title-item">《深入理解jvm字节码》读书笔记系列三：字节码进阶</span>
+                                <span class="post-nav-title-item">java9模块化探路之旅</span>
                                 <span class="post-nav-item">Next posts</span>
                             </span>
                             <span class="right arrow-icon flex-center">
